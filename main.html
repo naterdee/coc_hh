@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Project Hammerhead</title>
+<style>
+  :root {
+    --bg: #f6f5f1; --card: #fff; --ink: #222; --muted: #6b6b66; --line: #e3e1da;
+    --accent: #2f5d8a; --accent-ink: #fff; --warn: #b3261e; --ok: #2e7d4f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #171717; --card: #222; --ink: #eee; --muted: #a0a09a; --line: #353535;
+            --accent: #6aa3d8; --accent-ink: #111; --warn: #ff8a80; --ok: #7bd4a0; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.45 system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+  [hidden] { display: none !important; }
+  header { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); padding: 12px 16px; }
+  .bar { max-width: 960px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  h1 { font-size: 1.15rem; margin: 0 12px 0 0; }
+  input, select, textarea, button { font: inherit; color: inherit; }
+  input[type=search], input[type=text], input[type=email], input[type=password], input[type=date], input[type=time], select, textarea {
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%;
+  }
+  #search { flex: 1 1 200px; width: auto; }
+  .bar select { width: auto; }
+  button { border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+  button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  button.danger { color: var(--warn); }
+  button:disabled { opacity: .45; cursor: default; }
+  main { max-width: 960px; margin: 0 auto; padding: 16px; }
+  #banner { display: none; max-width: 960px; margin: 12px auto 0; padding: 10px 14px; border-radius: 8px;
+            background: #fff4d6; color: #5a4300; border: 1px solid #ecd9a0; }
+  #banner.show { display: block; }
+  #banner.err { background: #fde8e6; color: #7a1812; border-color: #f2b8b3; }
+  #banner.ok { background: #e3f4ea; color: #1d5a37; border-color: #b4dcc4; }
+  .count { color: var(--muted); font-size: .9rem; margin-bottom: 8px; }
+  .grid { display: grid; gap: 10px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer; }
+  .card:hover { border-color: var(--accent); }
+  .row1 { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .name { font-weight: 650; font-size: 1.05rem; }
+  .badge { font-size: .75rem; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+  .badge.Active { color: var(--ok); border-color: var(--ok); }
+  .badge.New { color: var(--accent); border-color: var(--accent); }
+  .meta { color: var(--muted); font-size: .92rem; margin-top: 4px; }
+  .meta strong { color: var(--ink); font-weight: 600; }
+  .overdue { color: var(--warn); font-weight: 600; }
+  .notes { margin-top: 6px; font-size: .92rem; white-space: pre-wrap; }
+  .empty { text-align: center; color: var(--muted); padding: 40px 0; }
+  dialog { border: 1px solid var(--line); border-radius: 14px; background: var(--card); color: var(--ink); width: min(620px, 94vw); padding: 0; max-height: 92vh; overflow-y: auto; }
+  dialog::backdrop { background: rgba(0,0,0,.45); }
+  form { padding: 16px; display: grid; gap: 12px; }
+  form h2 { margin: 0; font-size: 1.1rem; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  @media (max-width: 520px) { .two, .three { grid-template-columns: 1fr; } }
+  label { display: grid; gap: 4px; font-size: .85rem; color: var(--muted); }
+  textarea { min-height: 120px; resize: vertical; }
+  textarea.short { min-height: 70px; }
+  .logsec { border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 10px; }
+  .logsec-head { display: flex; justify-content: space-between; align-items: center; }
+  .logentry { border: 1px solid var(--line); border-radius: 10px; padding: 10px; display: grid; gap: 8px; }
+  .logentry-top { display: flex; gap: 8px; align-items: center; }
+  .logentry-top input { width: auto; }
+  .logentry-top button { margin-left: auto; padding: 4px 10px; }
+  .logentry textarea { min-height: 80px; }
+  .nolog { color: var(--muted); font-size: .9rem; }
+  .more { color: var(--muted); }
+  .gen { color: var(--muted); }
+  .actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+  .actions .left { margin-right: auto; }
+  small { color: var(--muted); }
+  #loginView { max-width: 380px; margin: 12vh auto 0; padding: 0 16px; }
+  #loginView .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; }
+  #loginView h1 { margin: 0; font-size: 1.3rem; }
+</style>
+</head>
+<body>
+
+<div id="banner"></div>
+
+<!-- Login screen -->
+<section id="loginView" hidden>
+  <div class="panel">
+    <form id="loginForm">
+      <h1>Project Hammerhead</h1>
+      <small>Sign in with the account your admin created for you.</small>
+      <label>Email <input type="email" name="email" autocomplete="username" required></label>
+      <label>Password <input type="password" name="password" autocomplete="current-password" required></label>
+      <button type="submit" class="primary" id="loginBtn">Sign in</button>
+    </form>
+  </div>
+</section>
+
+<!-- App -->
+<div id="appView" hidden>
+  <header>
+    <div class="bar">
+      <h1>Project Hammerhead</h1>
+      <input type="search" id="search" placeholder="Search names, notes, schedule…">
+      <select id="filterStatus" aria-label="Filter by status"></select>
+      <select id="sortBy" aria-label="Sort">
+        <option value="name">Sort: Name</option>
+        <option value="followup">Sort: Next follow-up</option>
+        <option value="updated">Sort: Recently updated</option>
+      </select>
+      <button class="primary" id="addBtn">+ Add person</button>
+      <button id="menuBtn" aria-label="More">⋯</button>
+    </div>
+  </header>
+  <main>
+    <div class="count" id="count"></div>
+    <div class="grid" id="list"></div>
+  </main>
+</div>
+
+<dialog id="menuDlg">
+  <form method="dialog" id="menuForm">
+    <h2>Menu</h2>
+    <small id="whoami"></small>
+    <button type="button" id="exportBtn">Download people (CSV)</button>
+    <button type="button" id="exportLogsBtn">Download log entries (CSV)</button>
+    <button type="button" id="importBtn">Import from CSV…</button>
+    <input type="file" id="importFile" accept=".csv,text/csv" hidden>
+    <button type="button" id="pwBtn">Change my password</button>
+    <button type="button" id="signOutBtn" class="danger">Sign out</button>
+    <div class="actions"><button type="submit">Close</button></div>
+  </form>
+</dialog>
+
+<dialog id="personDlg">
+  <form id="personForm">
+    <h2 id="dlgTitle">Add person</h2>
+    <label>Name <input type="text" name="name" required></label>
+    <div class="two">
+      <label>Contact info <input type="text" name="contact" placeholder="Phone / email"></label>
+      <label>Status <select name="status"></select></label>
+    </div>
+    <div class="three">
+      <label>Meeting day <select name="meeting_day"></select></label>
+      <label>Time <input type="time" name="meeting_time"></label>
+      <label>How often <select name="frequency"></select></label>
+    </div>
+    <div class="two">
+      <label>Where <input type="text" name="location" placeholder="Coffee shop, dorm lounge…"></label>
+      <label>Who meets with them <input type="text" name="met_by" placeholder="Leader name(s)"></label>
+    </div>
+    <div class="two">
+      <label>Last contact <input type="date" name="last_contact"></label>
+      <label>Next follow-up <input type="date" name="next_followup"></label>
+    </div>
+    <label>General notes <small>(background that doesn't change much)</small>
+      <textarea name="notes" class="short" placeholder="Interests, family context, ongoing prayer needs…"></textarea></label>
+    <div class="logsec">
+      <div class="logsec-head">
+        <strong>Log</strong>
+        <button type="button" id="addLogBtn">+ Add entry</button>
+      </div>
+      <div id="logList"></div>
+    </div>
+    <div class="actions">
+      <button type="button" class="danger left" id="deleteBtn">Delete</button>
+      <button type="button" id="cancelBtn">Cancel</button>
+      <button type="submit" class="primary" id="savePersonBtn">Save entry</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
