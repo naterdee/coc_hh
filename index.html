@@ -130,29 +130,22 @@
     <div class="actions"><button type="submit">Close</button></div>
   </form>
 </dialog>
-
-<dialog id="personDlg">
-  <form id="personForm">
-    <h2 id="dlgTitle">Add person</h2>
-    <label>Name <input type="text" name="name" required></label>
-    <div class="two">
-      <label>Contact info <input type="text" name="contact" placeholder="Phone / email"></label>
-      <label>Status <select name="status"></select></label>
+      <span class="lbl">Tags</span>
+      <div class="tagfield" id="tagField">
+        <span id="tagChips"></span>
+        <input type="text" id="tagInput" list="tagSuggestions" placeholder="Type a tag, press Enter" autocomplete="off">
+      </div>
+      <datalist id="tagSuggestions"></datalist>
     </div>
-    <div class="three">
-      <label>Meeting day <select name="meeting_day"></select></label>
-      <label>Time <input type="time" name="meeting_time"></label>
-      <label>How often <select name="frequency"></select></label>
-    </div>
-    <div class="two">
-      <label>Where <input type="text" name="location" placeholder="Coffee shop, dorm lounge…"></label>
-      <label>Who meets with them <input type="text" name="met_by" placeholder="Leader name(s)"></label>
-    </div>
-    <div class="two">
-      <label>Last contact <input type="date" name="last_contact"></label>
-      <label>Next follow-up <input type="date" name="next_followup"></label>
-    </div>
-    <label>General notes <small>(background that doesn't change much)</small>
+    <details id="meetingBox">
+      <summary>Recurring meeting <small>(optional, shows a status automatically)</small></summary>
+      <div class="three" style="margin-top:10px">
+        <label>Day <select name="meeting_day"></select></label>
+        <label>Time <input type="time" name="meeting_time"></label>
+        <label>How often <select name="frequency"></select></label>
+      </div>
+    </details>
+    <label>Notes <small>(background that doesn't change much)</small>
       <textarea name="notes" class="short" placeholder="Interests, family context, ongoing prayer needs…"></textarea></label>
     <div class="logsec">
       <div class="logsec-head">
